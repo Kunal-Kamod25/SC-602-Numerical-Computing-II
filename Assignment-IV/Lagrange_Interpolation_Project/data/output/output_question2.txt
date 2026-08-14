@@ -1,0 +1,34 @@
+LAGRANGE INTERPOLATION - RESULT REPORT
+Question: Question 2
+Date/Time: 2026-08-14 07:28:07
+
+INPUT DATA
+------------------------------
+Number of points: 4
+  x[0] = 1.0, y[0] = 2.0
+  x[1] = 2.0, y[1] = 4.5
+  x[2] = 3.0, y[2] = 8.0
+  x[3] = 4.0, y[3] = 13.5
+
+BASIS POLYNOMIAL VERIFICATION
+------------------------------
+(Checking that L_i(x_i) = 1, as per theory)
+  L_0(x_0) = 1.0
+  L_1(x_1) = 1.0
+  L_2(x_2) = 1.0
+  L_3(x_3) = 1.0
+
+INTERPOLATION POLYNOMIAL
+------------------------------
+P(x) = 0.1666666667*x**3 - 0.5*x**2 + 2.8333333333*x - 0.5
+
+ESTIMATED VALUES
+------------------------------
+  f(2.5) = 6.0625
+  f(3.5) = 10.4375
+
+PERFORMANCE
+------------------------------
+Time taken: 0.012665 seconds
+
+Program finished successfully.
