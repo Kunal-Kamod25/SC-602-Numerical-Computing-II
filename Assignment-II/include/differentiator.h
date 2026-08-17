@@ -15,18 +15,18 @@
 class Differentiator {
 public:
     // f'(x) ~= ( f(x+h) - f(x) ) / h
-    static double forwardDifference(const MathFunction& func, double x, double h);
+    double forwardDifference(const MathFunction& func, double x, double h);
 
     // f'(x) ~= ( f(x) - f(x-h) ) / h
-    static double backwardDifference(const MathFunction& func, double x, double h);
+    double backwardDifference(const MathFunction& func, double x, double h);
 
     // f'(x) ~= ( f(x+h) - f(x-h) ) / (2h)
-    static double centralDifference(const MathFunction& func, double x, double h);
+    double centralDifference(const MathFunction& func, double x, double h);
 
 private:
     // shared helper that all three methods call first.
     // throws InvalidStepSizeException if h is not a valid step size.
-    static void validateStepSize(double h);
+    void validateStepSize(double h);
 };
 
 #endif // DIFFERENTIATOR_H

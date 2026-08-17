@@ -30,8 +30,23 @@ int main() {
     // the point we are approximating f'(1) at, as asked in the assignment
     const double x0 = 1.0;
 
-    // 6 step sizes, from big to small
-    std::vector<double> hValues = {1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6};
+    // Read h values from input file
+    std::vector<double> hValues;
+    std::ifstream inFile("input/h_values.txt");
+    if (!inFile) {
+        std::cerr << "Error: Could not open input/h_values.txt\n";
+        return 1;
+    }
+    double h_val;
+    while (inFile >> h_val) {
+        hValues.push_back(h_val);
+    }
+    inFile.close();
+    
+    if (hValues.empty()) {
+        std::cerr << "Error: No h values found in input file.\n";
+        return 1;
+    }
 
     // list of test functions, stored as base class pointers (this is
     // the "OOP" part - main.cpp doesn't need to know the details of
@@ -62,15 +77,18 @@ int main() {
 
         double exact = funcPtr->exactDerivative(x0);
 
+        // Instantiate a Differentiator object since methods are no longer static
+        Differentiator diffObj;
+
         for (double h : hValues) {
             // wrapping this in a try/catch even though we control the
             // h values ourselves - this is where the exception handling
             // would kick in if h was ever bad (see the demo at the
             // bottom of main() where we pass in an invalid h on purpose)
             try {
-                double fwd = Differentiator::forwardDifference(*funcPtr, x0, h);
-                double bwd = Differentiator::backwardDifference(*funcPtr, x0, h);
-                double ctr = Differentiator::centralDifference(*funcPtr, x0, h);
+                double fwd = diffObj.forwardDifference(*funcPtr, x0, h);
+                double bwd = diffObj.backwardDifference(*funcPtr, x0, h);
+                double ctr = diffObj.centralDifference(*funcPtr, x0, h);
 
                 double errFwd = std::fabs(exact - fwd);
                 double errBwd = std::fabs(exact - bwd);
@@ -102,7 +120,8 @@ int main() {
     std::cout << "\n--- exception handling demo (using h = 0 on purpose) ---\n";
     try {
         ExponentialFunction expFunc;
-        double bad = Differentiator::centralDifference(expFunc, x0, 0.0);
+        Differentiator diffObjDemo;
+        double bad = diffObjDemo.centralDifference(expFunc, x0, 0.0);
         std::cout << "This line should never print: " << bad << "\n";
     } catch (const InvalidStepSizeException& ex) {
         std::cout << "Caught it! Message: " << ex.what() << "\n";
