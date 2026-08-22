@@ -1,0 +1,26 @@
+=========================================================
+LAGRANGE INTERPOLATION PROJECT - EXECUTIVE REPORT
+=========================================================
+Project: Numerical Computing II - Assignment IV & V
+Methodology: Object-Oriented Barycentric Lagrange Interpolation
+
+SUMMARY OF EXECUTION:
+1. Data Ingestion:
+   - Successfully parsed large dataset (150 points: student_academic_stress_interpolation_150.csv).
+   - Successfully parsed 5 standard textbook datasets (q1.txt - q5.txt).
+
+2. Scale Testing & Runge's Phenomenon:
+   - Interpolation models were progressively fitted on dataset subsets of N = 5, 20, 50, 100, and 150.
+   - The Barycentric algorithm successfully prevented numerical underflow/overflow across all subsets.
+   - Massive boundary oscillations (Runge's Phenomenon) were successfully plotted for large N, proving that high-degree polynomials on evenly spaced nodes are geometrically unstable despite algorithmic stability.
+
+3. Outputs Generated:
+   - High-resolution Scatter Plot: outputs/scale_test_scatter.png
+   - Progressive Phenomenon Plots: outputs/scale_test_N5.png -> outputs/scale_test_N150.png
+   - Standard Dataset Plots: outputs/q1_plot.png -> outputs/q5_plot.png
+   - Individual Dataset Reports: Located in outputs/
+   - Final Submission Document: Assignment5_Barycentric_Lagrange_Interpolation.docx
+
+CONCLUSION:
+The Barycentric Lagrange Interpolation approach is computationally robust for evaluation, but Piecewise or Spline interpolation is strictly recommended for datasets > 20 points to avoid Runge's Phenomenon at the boundaries.
+=========================================================

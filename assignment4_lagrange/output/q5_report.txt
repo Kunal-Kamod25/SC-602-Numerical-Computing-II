@@ -1,0 +1,11 @@
+LAGRANGE INTERPOLATION REPORT
+Title: Interpolation for q5
+Status: Success
+
+Dataset Size: 4 points
+X Range: [1.0000, 4.0000]
+Y Range: [1.0000, 16.0000]
+
+Sample Evaluations:
+f(2.5000) = 6.25000000
+

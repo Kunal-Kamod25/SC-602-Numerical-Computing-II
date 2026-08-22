@@ -1,0 +1,8 @@
+LAGRANGE INTERPOLATION REPORT
+Title: Scale Test: Runge's Phenomenon
+Status: Success
+
+Dataset Size: 150 points
+X Range: [0.5000, 10.0000]
+Y Range: [2.7050, 5.9060]
+

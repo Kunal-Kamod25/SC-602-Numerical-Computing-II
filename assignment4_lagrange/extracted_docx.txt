@@ -1,0 +1,139 @@
+Numerical Computing II
+Assignment IV — Lagrange Interpolation
+Date: Aug 14, 2026
+For this assignment I wrote a small Python program to do the Lagrange interpolation instead of doing it fully by hand, mainly to double check my hand calculations and to plot the curves. The steps and formulas used are the regular Lagrange interpolation method taught in class. All the working, tables and graphs below are generated from that program.
+
+Question 1
+Given data: x = [0, 1, 2], f(x) = [1, 3, 7]
+x
+0
+1
+2
+f(x)
+1
+3
+7
+
+1. Interpolating polynomial P2(x):
+P(x) = 1·x² + 1·x + 1   (i.e. P(x) = x² + x + 1)
+2. Lagrange basis polynomials:
+L0(x) = 0.5x² − 1.5x + 1
+L1(x) = −x² + 2x
+L2(x) = 0.5x² − 0.5x
+3. Verification that Li(xj) = 1 if i=j, else 0:
+Li \ xj
+x = 0
+x = 1
+x = 2
+L0
+1
+0
+0
+L1
+0
+1
+0
+L2
+0
+0
+1
+
+The property checks out for every combination, exactly as expected.
+4. Estimate f(1.5):
+Using the polynomial, f(1.5) = 4.7500
+5. Compare with exact value (f(x) = x² + x + 1):
+Exact f(1.5) = (1.5)² + 1.5 + 1 = 4.7500
+Difference between interpolated and exact value = 0.000000 — they match exactly. This makes sense because the original function is itself a quadratic, and with 3 points our interpolating polynomial is also (at most) a quadratic, so it recovers the function exactly.
+
+
+Question 2
+Given experimental data: x = [1, 2, 3, 4], f(x) = [2.0, 4.5, 8.0, 13.5]
+x
+1
+2
+3
+4
+f(x)
+2
+4.5
+8
+13.5
+
+1. Interpolating polynomial P3(x):
+P(x) = 0.1667x³ − 0.5x² + 2.833x − 0.5
+2. Estimate f(2.5):
+f(2.5) = 6.0625
+3. Estimate f(3.5):
+f(3.5) = 10.4375
+4. Do these values look reasonable?
+Yes. f(2.5) = 6.0625 sits between f(2) = 4.5 and f(3) = 8.0, and f(3.5) = 10.4375 sits between f(3) = 8.0 and f(4) = 13.5, so both values fit naturally within the surrounding data. The original data is increasing at a growing rate (the differences between consecutive f(x) values keep getting bigger: 2.5, 3.5, 5.5), and the interpolated points follow that same increasing trend, so they look reasonable.
+
+
+Question 3
+Given non-uniformly spaced data: x = [0, 0.5, 1.5, 3], f(x) = [1.000, 1.125, 1.875, 4.000]
+x
+0
+0.5
+1.5
+3
+f(x)
+1
+1.125
+1.875
+4
+
+1. Interpolating polynomial:
+P(x) = −0.02222x³ + 0.3778x² + 0.06667x + 1
+2. Estimate f(1):
+f(1) = 1.4222
+3. Estimate f(2):
+f(2) = 2.4667
+4. Why is Lagrange interpolation particularly convenient here?
+The x-values in this data are not evenly spaced — the gaps are 0.5, then 1.0, then 1.5. Lagrange interpolation doesn't care about equal spacing at all; the formula just uses whatever x-values you give it directly. Other methods, like Newton's forward or backward difference formulas, are built around a constant step size h between points, so they can't be applied directly to unevenly spaced data like this without modification. That's exactly the situation here, which is why Lagrange is the more convenient choice.
+
+
+Question 4
+Given data: x = [2, 3, 5, 7], f(x) = [5, 10, 26, 50]
+x
+2
+3
+5
+7
+f(x)
+5
+10
+26
+50
+
+1. Construct P3(x):
+P(x) = x² + 1   (the cubic term worked out to ~0, so the resulting polynomial is really quadratic)
+2. Calculate f(4), f(6), f(8):
+f(4) = 17.0000
+f(6) = 37.0000
+f(8) = 65.0000
+3. Which estimate do I expect to be most reliable?
+f(4) and f(6) are both interpolation — they fall inside the given x-range of [2, 7] — so these two are the more trustworthy estimates. f(8) is extrapolation, since 8 lies outside the range covered by the data, and polynomial extrapolation can drift away from the real behaviour of the underlying function once you step outside the known range. So between the three, f(8) is the one I'd trust the least, and f(4)/f(6) are the more reliable ones.
+
+
+Question 5
+Given data: x = [1, 2, 3, 4], f(x) = [1, 4, 9, 16]
+x
+1
+2
+3
+4
+f(x)
+1
+4
+9
+16
+
+A student claims: "Since four data points are given, the interpolating polynomial must always be a cubic polynomial."
+1. Is the statement mathematically correct?
+No. With 4 data points, the Lagrange formula can produce a polynomial of degree at most n − 1 = 3, but "at most" does not mean it will always be exactly degree 3 — that depends entirely on the data.
+2. Lagrange interpolating polynomial:
+P(x) = x²   (all higher-order terms cancelled out to 0 after simplifying)
+3. Degree of the resulting polynomial:
+Degree 2, not degree 3.
+4. Why can the polynomial have degree less than n − 1 even with n points given?
+Looking at the data, f(x) = x² fits every single point exactly: (1,1), (2,4), (3,9), (4,16). Since one quadratic already passes through all four points perfectly, when you actually expand the Lagrange formula the coefficients on the x³ term all cancel out to zero. So even though the formula is set up to allow up to degree 3, the "extra" cubic part isn't needed and disappears. In general, the degree from n points is at most n − 1, but it comes out lower whenever the given data happens to already lie exactly on a lower-degree curve.
