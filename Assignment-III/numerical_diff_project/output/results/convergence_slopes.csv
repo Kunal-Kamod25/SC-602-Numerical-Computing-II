@@ -1,0 +1,5 @@
+function_name,slope_D_truncation_region,slope_R_truncation_region,theoretical_D,theoretical_R,slope_D_full_range,slope_R_full_range
+f(x) = e^x,1.9777,3.0743,2,4,0.0443,-0.5461
+f(x) = sin(x),1.9815,3.2510,2,4,0.0674,-0.5877
+f(x) = cos(x),2.0221,3.0946,2,4,0.0662,-0.5242
+f(x) = x^3 - 2x + 1,1.7282,-1.0969,2,4,0.1644,-0.8657

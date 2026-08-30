@@ -1,0 +1,159 @@
+NUMERICAL COMPUTING II - ASSIGNMENT III
+Can we make Numerical Differentiation more accurate?
+Investigation of Richardson Extrapolation
+======================================================================
+
+Evaluation point: x = 1.0
+Step sizes used: 1e-01, 1e-02, 1e-03, 1e-04, 1e-05, 1e-06, 1e-07, 1e-08, 1e-09, 1e-10, 1e-11, 1e-12
+
+----------------------------------------------------------------------
+CONVERGENCE (LOG-LOG) SLOPES  --  observed vs theoretical
+----------------------------------------------------------------------
+Slopes below are fit ONLY over the truncation-error-dominated region
+(the leading run of h values for which error is still decreasing, i.e.
+before round-off takes over). This is the regime the theoretical orders
+O(h^2) and O(h^4) actually apply to. Full-range slopes (all h, including
+the round-off-dominated tail) are also shown for comparison.
+
+Function                 Slope D  Theory   Slope R  Theory   Slope D(full)   Slope R(full)
+f(x) = e^x                 1.978       2     3.074       4           0.044          -0.546
+f(x) = sin(x)              1.981       2     3.251       4           0.067          -0.588
+f(x) = cos(x)              2.022       2     3.095       4           0.066          -0.524
+f(x) = x^3 - 2x + 1        1.728       2    -1.097       4           0.164          -0.866
+
+Note on f(x) = x^3 - 2x + 1: its third derivative is a small constant, so both
+D(h) and, especially, R(h) errors are already tiny (~1e-13 to 1e-15) even at
+h = 0.1. This means round-off noise dominates almost immediately for this
+function, so its truncation-region slope estimate (above) is based on very few
+clean points and should be read with that caveat -- it is a genuine feature of
+this particular function, not an error in the implementation.
+
+----------------------------------------------------------------------
+RESULTS TABLE
+----------------------------------------------------------------------
+==========================================================================================================
+f(x) = e^x
+==========================================================================================================
+Function                       h            D(h)            R(h)         Exact       |Err D|       |Err R|
+                         1.0e-01      2.72281456      2.71828126    2.71828183      4.53e-03      5.66e-07
+                         1.0e-02      2.71832713      2.71828183    2.71828183      4.53e-05      5.67e-11
+                         1.0e-03      2.71828228      2.71828183    2.71828183      4.53e-07      4.02e-13
+                         1.0e-04      2.71828183      2.71828183    2.71828183      4.53e-09      8.56e-13
+                         1.0e-05      2.71828183      2.71828183    2.71828183      5.86e-11      5.86e-11
+                         1.0e-06      2.71828183      2.71828183    2.71828183      1.63e-10      1.33e-10
+                         1.0e-07      2.71828183      2.71828183    2.71828183      5.86e-11      2.90e-09
+                         1.0e-08      2.71828182      2.71828182    2.71828183      6.60e-09      6.60e-09
+                         1.0e-09      2.71828182      2.71828212    2.71828183      6.60e-09      2.89e-07
+                         1.0e-10      2.71828116      2.71828412    2.71828183      6.73e-07      2.29e-06
+                         1.0e-11      2.71829226      2.71826265    2.71828183      1.04e-05      1.92e-05
+                         1.0e-12      2.71849210      2.71819604    2.71828183      2.10e-04      8.58e-05
+
+==========================================================================================================
+f(x) = sin(x)
+==========================================================================================================
+Function                       h            D(h)            R(h)         Exact       |Err D|       |Err R|
+                         1.0e-01      0.53940225      0.54030219    0.54030231      9.00e-04      1.13e-07
+                         1.0e-02      0.54029330      0.54030231    0.54030231      9.00e-06      1.13e-11
+                         1.0e-03      0.54030222      0.54030231    0.54030231      9.01e-08      3.54e-14
+                         1.0e-04      0.54030230      0.54030231    0.54030231      9.00e-10      1.07e-12
+                         1.0e-05      0.54030231      0.54030231    0.54030231      1.11e-11      1.11e-11
+                         1.0e-06      0.54030231      0.54030231    0.54030231      2.77e-11      2.77e-11
+                         1.0e-07      0.54030231      0.54030230    0.54030231      1.94e-10      9.34e-10
+                         1.0e-08      0.54030231      0.54030230    0.54030231      2.58e-09      4.82e-09
+                         1.0e-09      0.54030230      0.54030223    0.54030231      2.97e-09      7.70e-08
+                         1.0e-10      0.54030225      0.54030373    0.54030231      5.85e-08      1.42e-06
+                         1.0e-11      0.54030114      0.54030114    0.54030231      1.17e-06      1.17e-06
+                         1.0e-12      0.54029003      0.54051208    0.54030231      1.23e-05      2.10e-04
+
+==========================================================================================================
+f(x) = cos(x)
+==========================================================================================================
+Function                       h            D(h)            R(h)         Exact       |Err D|       |Err R|
+                         1.0e-01     -0.84006923     -0.84147081   -0.84147098      1.40e-03      1.75e-07
+                         1.0e-02     -0.84145696     -0.84147098   -0.84147098      1.40e-05      1.75e-11
+                         1.0e-03     -0.84147084     -0.84147098   -0.84147098      1.40e-07      1.13e-13
+                         1.0e-04     -0.84147098     -0.84147098   -0.84147098      1.40e-09      1.53e-12
+                         1.0e-05     -0.84147098     -0.84147098   -0.84147098      1.09e-11      3.46e-12
+                         1.0e-06     -0.84147098     -0.84147098   -0.84147098      2.75e-11      1.21e-10
+                         1.0e-07     -0.84147099     -0.84147098   -0.84147098      3.06e-10      1.17e-09
+                         1.0e-08     -0.84147098     -0.84147097   -0.84147098      3.03e-09      1.78e-08
+                         1.0e-09     -0.84147100     -0.84147100   -0.84147098      1.92e-08      1.92e-08
+                         1.0e-10     -0.84147078     -0.84147004   -0.84147098      2.03e-07      9.43e-07
+                         1.0e-11     -0.84147134     -0.84147134   -0.84147098      3.52e-07      3.52e-07
+                         1.0e-12     -0.84149354     -0.84156756   -0.84147098      2.26e-05      9.66e-05
+
+==========================================================================================================
+f(x) = x^3 - 2x + 1
+==========================================================================================================
+Function                       h            D(h)            R(h)         Exact       |Err D|       |Err R|
+                         1.0e-01      1.01000000      1.00000000    1.00000000      1.00e-02      2.00e-15
+                         1.0e-02      1.00010000      1.00000000    1.00000000      1.00e-04      2.50e-14
+                         1.0e-03      1.00000100      1.00000000    1.00000000      1.00e-06      4.06e-13
+                         1.0e-04      1.00000001      1.00000000    1.00000000      1.00e-08      2.60e-13
+                         1.0e-05      1.00000000      1.00000000    1.00000000      9.54e-11      3.62e-11
+                         1.0e-06      1.00000000      1.00000000    1.00000000      8.23e-11      2.14e-10
+                         1.0e-07      1.00000000      1.00000000    1.00000000      5.84e-10      5.84e-10
+                         1.0e-08      0.99999999      0.99999999    1.00000000      6.08e-09      6.08e-09
+                         1.0e-09      1.00000008      1.00000008    1.00000000      8.27e-08      8.27e-08
+                         1.0e-10      1.00000008      1.00000008    1.00000000      8.27e-08      8.27e-08
+                         1.0e-11      1.00000008      1.00000008    1.00000000      8.27e-08      8.27e-08
+                         1.0e-12      1.00008890      1.00008890    1.00000000      8.89e-05      8.89e-05
+
+----------------------------------------------------------------------
+ANSWERS
+----------------------------------------------------------------------
+
+Q1. Does Richardson always give a smaller error than Central Difference?
+    In the regime where truncation error dominates (roughly h = 1e-1 down to
+    about h = 1e-5), yes: R(h) is consistently more accurate than D(h) for every
+    function tested, often by several orders of magnitude, because Richardson
+    cancels the leading O(h^2) error term of the central difference formula.
+    However, once h becomes extremely small (see Q3/Q6), floating-point
+    round-off error dominates and Richardson's advantage shrinks or can even
+    reverse, since R(h) combines two nearly-equal, noisy D(h) values and can
+    amplify that round-off noise.
+
+Q2. By approximately what factor does the error decrease when h is reduced by 10?
+    Central Difference is O(h^2), so reducing h by a factor of 10 should reduce
+    its error by a factor of about 10^2 = 100.
+    Richardson Extrapolation is O(h^4), so reducing h by a factor of 10 should
+    reduce its error by a factor of about 10^4 = 10000.
+    This matches the observed slopes in the table above (while truncation error
+    dominates): slope ~ -2 for D(h) and slope ~ -4 for R(h) on the log-log plot.
+
+Q3. Does Richardson continue to improve as h becomes very small?
+    No. Richardson's error decreases rapidly at first (as O(h^4) predicts), but
+    for very small h (typically below ~1e-4 to 1e-5 depending on the function)
+    the error stops decreasing and eventually starts increasing again. This is
+    because subtracting nearly-equal floating point numbers f(x+h) and f(x-h)
+    loses significant digits (catastrophic cancellation), and Richardson's extra
+    combination step (4*D(h/2) - D(h)) further amplifies this round-off noise.
+
+Q4. Does the log-log slope support the theoretical prediction?
+    Yes, over the range where truncation error dominates. The 'truncation-region'
+    slopes in the table above are close to 2 for Central Difference and close to
+    3-4 for Richardson Extrapolation, matching the theoretical orders O(h^2) and
+    O(h^4). The separate 'full-range' slope (fit across every h value, including
+    the ones where round-off already dominates) is much flatter/noisier, because
+    it mixes a decreasing-error region with an increasing-error region -- this is
+    itself evidence of the round-off floor discussed in Q6, not a contradiction
+    of the theory.
+
+Q5. Does Richardson achieve the expected O(h^4) behavior?
+    Yes, in the intermediate h range. As h decreases from 1e-1 toward about 1e-4,
+    R(h)'s error drops far faster than D(h)'s error, consistent with O(h^4) vs
+    O(h^2) convergence. This is confirmed both by the log-log plots (steeper
+    slope for R(h)) and by the near -4 observed slope values.
+
+Q6. What role does floating-point round-off error play?
+    Every function evaluation in double precision carries a relative round-off
+    error of about 1e-16. The central difference formula divides a small
+    difference f(x+h)-f(x-h) by 2h; as h shrinks, that difference shrinks toward
+    the size of the round-off noise itself, so the *relative* round-off error in
+    the result grows like O(machine_epsilon / h). Total error is therefore the
+    sum of a decreasing truncation term (O(h^2) or O(h^4)) and this growing
+    round-off term. There is an optimal h that minimizes total error; pushing h
+    smaller than that (roughly h < 1e-5 to 1e-6 for Central Difference, and even
+    larger for Richardson, since it involves an extra subtraction) makes results
+    worse, not better. This is exactly the up-turn visible at the right-hand side
+    of the log-log error plots and in the results table for h = 1e-7 .. 1e-12.

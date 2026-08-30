@@ -1,0 +1,33 @@
+ALGORITHM / PSEUDOCODE
+=======================
+
+1. CentralDifference.compute(f, x, h):
+       return ( f(x + h) - f(x - h) ) / (2 * h)
+
+2. RichardsonExtrapolation.compute(f, x, h):
+       D_h      = CentralDifference.compute(f, x, h)
+       D_h_half = CentralDifference.compute(f, x, h / 2)
+       return ( 4 * D_h_half - D_h ) / 3
+
+3. Main experiment loop:
+       for each test function f in {e^x, sin(x), cos(x), x^3 - 2x + 1}:
+           exact = f.exact_derivative(x = 1)
+           for each h in [1e-1, 1e-2, ..., 1e-12]:
+               D_h   = CentralDifference.compute(f, 1, h)
+               R_h   = RichardsonExtrapolation.compute(f, 1, h)
+               err_D = | exact - D_h |
+               err_R = | exact - R_h |
+               store (f.name, h, D_h, R_h, exact, err_D, err_R)
+
+4. Convergence slope estimation (log-log linear fit):
+       xs = log10(h)                 for every stored h
+       ys = log10(error)             for every stored error (error > 0)
+       slope = covariance(xs, ys) / variance(xs)      # least-squares fit
+
+5. Output:
+       - Save full results table to CSV (file_handler.save_results_csv)
+       - Save convergence slopes to CSV (file_handler.save_slopes_csv)
+       - Plot each function's curve (visualizer.plot_functions)
+       - Plot log-log error vs h per function (visualizer.plot_convergence_loglog)
+       - Plot a combined overview of all functions (visualizer.plot_all_convergence_overview)
+       - Write text report with answers to Q1-Q6 (file_handler.save_text_report)
