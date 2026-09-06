@@ -1,0 +1,4 @@
+Assignment III Summary
+Richardson extrapolation is built on Central Difference using inheritance + composition design.
+Expected order: Central O(h^2), Richardson O(h^4).
+See convergence_slopes.csv for observed slopes.

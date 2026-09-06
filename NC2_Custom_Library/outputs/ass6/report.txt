@@ -1,0 +1,3 @@
+Assignment VI Summary
+Implemented Newton + Lagrange interpolation comparisons.
+Included Runge error growth table and derivative method comparison.

@@ -1,0 +1,4 @@
+Assignment II Summary
+We compared Forward, Backward, and Central difference methods.
+Central difference should usually have the lowest truncation error (O(h^2)).
+Total rows saved: 108

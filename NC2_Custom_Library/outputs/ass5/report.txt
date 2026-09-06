@@ -1,0 +1,4 @@
+Assignment V Summary
+Used the provided 150-point dataset.
+Generated progression plots for N = 5, 20, 50, 100, 150.
+Barycentric Lagrange is used for better numerical stability on larger data.

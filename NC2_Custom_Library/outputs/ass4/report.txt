@@ -1,0 +1,3 @@
+Assignment IV Summary
+All q1..q5 text files were processed using LagrangeInterpolator.
+Outputs: per-file CSV estimates and interpolation plots.
