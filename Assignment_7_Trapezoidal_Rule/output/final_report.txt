@@ -1,0 +1,13 @@
+ASSIGNMENT 7 - COMPOSITE TRAPEZOIDAL RULE
+==================================================
+
+Question 1 exact value = 2.666666666666667
+Question 1 shows that the trapezoidal rule has approximately second-order accuracy.
+Richardson extrapolation gives a much better result.
+
+Question 2 reference value = 0.746824132812427
+Increasing n gives smaller errors for this example.
+
+Question 3 estimated integral = 6.5125000000
+
+Generated files are available in the output folder.

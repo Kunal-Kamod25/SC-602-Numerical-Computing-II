@@ -1,0 +1,39 @@
+
+QUESTION 1
+n	h		Approximation	Absolute Error	Order
+1	2.000000	4.0000000000	1.3333333333	-
+2	1.000000	3.0000000000	0.3333333333	2.000000
+4	0.500000	2.7500000000	0.0833333333	2.000000
+8	0.250000	2.6875000000	0.0208333333	2.000000
+16	0.125000	2.6718750000	0.0052083333	2.000000
+
+QUESTION 2
+n	h		Approximation	Absolute Error
+4	0.250000	0.7429840978	0.0038400350
+8	0.125000	0.7458656148	0.0009585180
+16	0.062500	0.7465845968	0.0002395360
+32	0.031250	0.7467642547	0.0000598782
+
+QUESTION 3
+x		f(x)
+0.00		1.00
+0.50		1.65
+1.00		2.70
+1.50		4.48
+2.00		7.39
+Trapezoidal integral = 6.5125000000
+
+All questions completed.
+Check the output folder for tables, graphs and the final report.
+
+ERRORS:
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 720, in _warm_feature_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/spreadsheet_warmup.py", line 704, in _warm_collaboration_flows
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/generated/interface/models.py", line 32317, in hydrate_crdt_from_proto
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/remote.py", line 749, in __call__
+  File "/tmp/tmp.L2TH2Y5coc/artifact_tool_v2-2.8.22/artifact_tool/rpc/client.py", line 150, in call
+artifact_tool.rpc.client.RemoteError: hydrateCrdtFromProto requires an empty collaborative document.
