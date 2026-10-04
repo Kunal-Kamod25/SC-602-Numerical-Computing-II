@@ -1,0 +1,3 @@
+Simpson 1/3 result = 6.3850000000
+
+Simpson 3/8 requires n to be a multiple of 3. The given data has n = 4 intervals, so pure Simpson 3/8 cannot be directly applied over the complete interval [0, 2].

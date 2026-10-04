@@ -318,29 +318,28 @@ def question3(data):
     print("Simpson 3/8: n = 4 is not a multiple of 3, so pure 3/8 cannot")
     print("be directly applied to the complete interval [0, 2].")
 
-    # Save data table.
-    save_csv(
-        OUTPUT_FOLDER / "question3_data.csv",
-        ["x", "f(x)"],
-        [[x, value] for x, value in zip(x_values, f_values)],
-    )
+    # Save data table for 1/3 and 3/8.
+    for folder in [OUTPUT_13_FOLDER, OUTPUT_38_FOLDER]:
+        save_csv(
+            folder / "question3_data.csv",
+            ["x", "f(x)"],
+            [[x, value] for x, value in zip(x_values, f_values)],
+        )
 
-    # Save Question 3 explanation.
-    save_text(
-        OUTPUT_FOLDER / "question3_note.txt",
-        "Simpson 1/3 result = "
-        + f"{answer_13:.10f}"
-        + "\n\nSimpson 3/8 requires n to be a multiple of 3. "
-        + "The given data has n = 4 intervals, so pure Simpson 3/8 "
-        + "cannot be directly applied over the complete interval [0, 2].",
-    )
+        save_text(
+            folder / "question3_note.txt",
+            "Simpson 1/3 result = "
+            + f"{answer_13:.10f}"
+            + "\n\nSimpson 3/8 requires n to be a multiple of 3. "
+            + "The given data has n = 4 intervals, so pure Simpson 3/8 "
+            + "cannot be directly applied over the complete interval [0, 2].",
+        )
 
-    # Create data graph.
-    make_data_graph(
-        x_values,
-        f_values,
-        OUTPUT_FOLDER / "question3_data_graph.png",
-    )
+        make_data_graph(
+            x_values,
+            f_values,
+            folder / "question3_data_graph.png",
+        )
 
     # Return results.
     return answer_13, answer_38
