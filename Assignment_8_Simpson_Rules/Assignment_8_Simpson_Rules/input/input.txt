@@ -1,0 +1,21 @@
+# Assignment 8 - Simpson 1/3 and Simpson 3/8 Rules
+
+[QUESTION1]
+function = x^2
+a = 0
+b = 2
+n_values_13 = 2,4,8,16
+n_values_38 = 3,6,12
+exact_value = 2.666666666666667
+
+[QUESTION2]
+function = exp(-x^2)
+a = 0
+b = 1
+n_values_13 = 4,8,16,32
+n_values_38 = 3,6,12,24
+reference_value = 0.746824132812427
+
+[QUESTION3]
+x_values = 0,0.5,1.0,1.5,2.0
+f_values = 1.00,1.65,2.70,4.48,7.39
