@@ -79,28 +79,20 @@ def make_q1_graph(h_values: list, error_values: list, file_name: str) -> None:
 
     # Create a new graph.
     plt.figure()
-
     # Plot error against step size.
     plt.loglog(h_values, error_values, "o-", label="Absolute Error")
-
     # Add graph title.
     plt.title("Question 1: Error vs Step Size")
-
     # Add x-axis label.
     plt.xlabel("Step size h")
-
     # Add y-axis label.
     plt.ylabel("Absolute Error")
-
     # Show grid.
     plt.grid(True)
-
     # Show legend.
     plt.legend()
-
     # Save the graph.
     plt.savefig(file_name, dpi=200, bbox_inches="tight")
-
     # Close the graph.
     plt.close()
 
@@ -111,31 +103,22 @@ def make_q2_graph(n_values: list, approximation_values: list, reference_value: f
 
     # Create a new graph.
     plt.figure()
-
     # Plot numerical values.
     plt.plot(n_values, approximation_values, "o-", label="Trapezoidal Approximation")
-
     # Plot reference value as a horizontal line.
     plt.axhline(reference_value, linestyle="--", label="Reference Value")
-
     # Add graph title.
     plt.title("Question 2: Approximation vs n")
-
     # Add x-axis label.
     plt.xlabel("Number of intervals n")
-
     # Add y-axis label.
     plt.ylabel("Integral value")
-
     # Show grid.
     plt.grid(True)
-
     # Show legend.
     plt.legend()
-
     # Save the graph.
     plt.savefig(file_name, dpi=200, bbox_inches="tight")
-
     # Close the graph.
     plt.close()
 
@@ -146,27 +129,19 @@ def make_q3_graph(x_values: list, f_values: list, file_name: str) -> None:
 
     # Create a new graph.
     plt.figure()
-
     # Plot the given experimental data.
     plt.plot(x_values, f_values, "o-", label="Given Data")
-
     # Add graph title.
     plt.title("Question 3: Experimental Data")
-
     # Add x-axis label.
     plt.xlabel("x")
-
-    # Add y-axis label.
+    # Addy-axis label.
     plt.ylabel("f(x)")
-
     # Show grid.
     plt.grid(True)
-
     # Show legend.
     plt.legend()
-
     # Save the graph.
     plt.savefig(file_name, dpi=200, bbox_inches="tight")
-
     # Close the graph.
     plt.close()

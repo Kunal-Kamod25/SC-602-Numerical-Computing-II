@@ -8,7 +8,6 @@ from algorithms import (
     TrapezoidalRule,
     absolute_error,
     estimate_order,
-    richardson_extrapolation,
 )
 
 # Import input, output and graph functions.
@@ -99,41 +98,11 @@ def question1(data):
     for row in rows:
         print("\t".join(str(value) for value in row))
 
-    # Perform Richardson extrapolation.
-    richardson_rows = []
-
-    # Use consecutive n values for Richardson calculation.
-    for i in range(len(n_values) - 1):
-        # Get old and new trapezoidal results.
-        old_result = approximation_values[i]
-        new_result = approximation_values[i + 1]
-
-        # Calculate Richardson result.
-        richardson = richardson_extrapolation(old_result, new_result)
-
-        # Calculate its error.
-        richardson_error = absolute_error(richardson, exact_value)
-
-        # Store Richardson values.
-        richardson_rows.append([
-            n_values[i],
-            n_values[i + 1],
-            f"{richardson:.10f}",
-            f"{richardson_error:.10f}",
-        ])
-
     # Save the main Question 1 table.
     save_csv(
         OUTPUT_FOLDER / "question1_table.csv",
         ["n", "h", "Approximation", "Absolute Error", "Order"],
         rows,
-    )
-
-    # Save Richardson table.
-    save_csv(
-        OUTPUT_FOLDER / "question1_richardson.csv",
-        ["Old n", "New n", "Richardson Value", "Richardson Error"],
-        richardson_rows,
     )
 
     # Create the Question 1 graph.
@@ -144,7 +113,7 @@ def question1(data):
     )
 
     # Return values for the final report.
-    return rows, richardson_rows
+    return rows
 
 
 def question2(data):
@@ -279,7 +248,7 @@ def main():
     data = read_input_file(INPUT_FILE)
 
     # Run Question 1.
-    q1_rows, richardson_rows = question1(data)
+    q1_rows = question1(data)
 
     # Run Question 2.
     q2_rows = question2(data)
@@ -294,7 +263,6 @@ def main():
     report.append("")
     report.append("Question 1 exact value = 2.666666666666667")
     report.append("Question 1 shows that the trapezoidal rule has approximately second-order accuracy.")
-    report.append("Richardson extrapolation gives a much better result.")
     report.append("")
     report.append("Question 2 reference value = 0.746824132812427")
     report.append("Increasing n gives smaller errors for this example.")

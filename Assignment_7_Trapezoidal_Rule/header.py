@@ -23,9 +23,7 @@ def estimate_order(error_old: float, error_new: float) -> float:
     pass
 
 
-# Apply Richardson extrapolation.
-def richardson_extrapolation(t_old: float, t_new: float) -> float:
-    pass
+
 
 
 # Save a list of rows as a CSV table.

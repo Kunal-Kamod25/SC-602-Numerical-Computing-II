@@ -63,6 +63,4 @@ def estimate_order(error_old: float, error_new: float) -> float:
     return math.log(error_old / error_new, 2)
 
 
-def richardson_extrapolation(t_old: float, t_new: float) -> float:
-    # Richardson formula for a second-order trapezoidal rule.
-    return (4 * t_new - t_old) / 3
+
