@@ -1,4 +1,5 @@
 # Assignment 9: Helper functions for I/O and plotting
+# Includes convergence / step-size progression graphs in the exact style of Assignment 7 & 8
 
 import csv
 from pathlib import Path
@@ -14,7 +15,7 @@ def load_dataset(file_path: Path) -> Tuple[List[float], List[float], List[float]
     temp_vals = []
     with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
-        header = next(reader)  # Skip header row
+        header = next(reader)
         for row in reader:
             if not row or not row[0].strip():
                 continue
@@ -25,7 +26,6 @@ def load_dataset(file_path: Path) -> Tuple[List[float], List[float], List[float]
 
 
 def save_csv_results(file_path: Path, headers: List[str], rows: List[list]) -> None:
-    # Save results to a CSV file.
     with open(file_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(headers)
@@ -33,7 +33,6 @@ def save_csv_results(file_path: Path, headers: List[str], rows: List[list]) -> N
 
 
 def plot_raw_scatter(t: List[float], P: List[float], output_path: Path) -> None:
-    # Plot the raw dataset as a scatter plot.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=3, label="Full Dataset (Ground Truth)")
     plt.title("Full Dataset: Heating Power [W] vs Time [s] (BMW i3 Trip)", fontsize=11)
@@ -47,7 +46,6 @@ def plot_raw_scatter(t: List[float], P: List[float], output_path: Path) -> None:
 
 
 def plot_individual_trapezoidal(t: List[float], P: List[float], output_path: Path) -> None:
-    # Plot trapezoidal linear approximation.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=5, label="Full Dataset (Ground Truth)")
     plt.plot(t, P, color="#1f77b4", linestyle="-", linewidth=2.0, label="Trapezoidal Rule (Linear chords)")
@@ -63,7 +61,6 @@ def plot_individual_trapezoidal(t: List[float], P: List[float], output_path: Pat
 
 
 def plot_individual_simpson13(t: List[float], P: List[float], output_path: Path) -> None:
-    # Plot Simpson 1/3 piecewise parabolic approximation.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=5, label="Full Dataset (Ground Truth)")
     t_fine = []
@@ -89,7 +86,6 @@ def plot_individual_simpson13(t: List[float], P: List[float], output_path: Path)
 
 
 def plot_individual_simpson38(t: List[float], P: List[float], output_path: Path) -> None:
-    # Plot Simpson 3/8 cubic approximation.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=5, label="Full Dataset (Ground Truth)")
     t_fine = []
@@ -114,8 +110,54 @@ def plot_individual_simpson38(t: List[float], P: List[float], output_path: Path)
     plt.close()
 
 
+# -------------------------------------------------------------
+# GRAPHS LIKE ASSIGNMENT 7 & 8: Error / Convergence vs Step Size
+# -------------------------------------------------------------
+
+def plot_trapezoidal_convergence(n_vals: list, approx_vals: list, ref_val: float, output_path: Path) -> None:
+    # Exact style of Assignment 7 make_q2_graph / make_q1_graph
+    plt.figure(figsize=(7, 4.0))
+    plt.plot(n_vals, approx_vals, "o-", color="#1f77b4", linewidth=2, label="Trapezoidal Approximation")
+    plt.axhline(ref_val, linestyle="--", color="gray", label=f"Simpson 1/3 Reference ({ref_val:.0f} J)")
+    plt.title("Trapezoidal Rule: Convergence vs Number of Intervals n", fontsize=11, fontweight="bold")
+    plt.xlabel("Number of intervals n", fontsize=10)
+    plt.ylabel("Calculated Thermal Energy (Joules)", fontsize=10)
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.legend(fontsize=9, loc="lower right")
+    plt.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+
+def plot_simpson13_convergence(n_vals: list, approx_vals: list, ref_val: float, output_path: Path) -> None:
+    # Exact style of Assignment 8 question2_simpson_13_error
+    errors = [abs(val - ref_val) for val in approx_vals]
+    plt.figure(figsize=(7, 4.0))
+    plt.plot(n_vals, approx_vals, "s-", color="#2ca02c", linewidth=2, label="Simpson 1/3 Approximation")
+    plt.axhline(ref_val, linestyle="--", color="gray", label=f"Converged Reference ({ref_val:.0f} J)")
+    plt.title("Simpson's 1/3 Rule: Energy Approximation vs n", fontsize=11, fontweight="bold")
+    plt.xlabel("Number of intervals n", fontsize=10)
+    plt.ylabel("Calculated Thermal Energy (Joules)", fontsize=10)
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.legend(fontsize=9, loc="lower right")
+    plt.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+
+def plot_simpson38_convergence(n_vals: list, approx_vals: list, ref_val: float, output_path: Path) -> None:
+    # Exact style of Assignment 8 question2_simpson_38_error
+    plt.figure(figsize=(7, 4.0))
+    plt.plot(n_vals, approx_vals, "^-", color="#d62728", linewidth=2, label="Simpson 3/8 Approximation")
+    plt.axhline(ref_val, linestyle="--", color="gray", label=f"Converged Reference ({ref_val:.0f} J)")
+    plt.title("Simpson's 3/8 Rule: Energy Approximation vs n", fontsize=11, fontweight="bold")
+    plt.xlabel("Number of intervals n (Multiples of 3)", fontsize=10)
+    plt.ylabel("Calculated Thermal Energy (Joules)", fontsize=10)
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.legend(fontsize=9, loc="lower right")
+    plt.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+
 def plot_overlay_comparison(t: List[float], P: List[float], output_path: Path) -> None:
-    # Plot all 3 methods overlaid on one comparison graph.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=5, label="Full Dataset (Ground Truth)")
     plt.plot(t, P, color="#1f77b4", linestyle="-", linewidth=1.8, label="Trapezoidal Rule (Linear)")

@@ -12,7 +12,7 @@ def set_cell_background(cell, fill_hex):
     shd = parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill_hex}"/>')
     tcPr.append(shd)
 
-def set_cell_margins(cell, top=80, bottom=80, left=110, right=110):
+def set_cell_margins(cell, top=70, bottom=70, left=100, right=100):
     tcPr = cell._tc.get_or_add_tcPr()
     tcMar = OxmlElement('w:tcMar')
     for m, val in [('top', top), ('bottom', bottom), ('left', left), ('right', right)]:
@@ -60,7 +60,7 @@ def build_doc():
     style_normal = doc.styles['Normal']
     font = style_normal.font
     font.name = 'Calibri'
-    font.size = Pt(11)
+    font.size = Pt(10.5)
     font.color.rgb = RGBColor(30, 30, 30)
 
     # Title matching sample
@@ -78,12 +78,20 @@ def build_doc():
     run_t2.font.color.rgb = RGBColor(30, 30, 30)
 
     run_t3 = p_title.add_run("Date: Oct 12, 2026\n\n")
-    run_t3.font.size = Pt(10)
+    run_t3.font.size = Pt(9.5)
     run_t3.font.color.rgb = RGBColor(80, 80, 80)
 
     run_name = p_title.add_run("Name: Kunal Kamod\nRoll No: MS2513")
     run_name.bold = True
-    run_name.font.size = Pt(11)
+    run_name.font.size = Pt(10.5)
+
+    def add_divider():
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_after = Pt(8)
+        pPr = p._p.get_or_add_pPr()
+        pbdr = parse_xml(f'<w:pBdr {nsdecls("w")}><w:bottom w:val="single" w:sz="6" w:space="1" w:color="D0D5DD"/></w:pBdr>')
+        pPr.append(pbdr)
 
     # Intro matching sample wording
     p_intro = doc.add_paragraph()
@@ -91,17 +99,19 @@ def build_doc():
     p_intro.paragraph_format.space_after = Pt(6)
     p_intro.paragraph_format.line_spacing = 1.15
     p_intro.add_run(
-        "For this assignment, I downloaded a real electric vehicle dataset from Kaggle: \"Battery and Heating Data in Real Driving Cycles\" "
-        "(https://www.kaggle.com/datasets/atechnohazard/battery-and-heating-data-in-real-driving-cycles). "
-        "The dataset contains actual road test measurements recorded from a BMW i3 (60 Ah) EV, specifically TripB01 in winter conditions.\n\n"
-        "We evaluate the cabin and battery Heating Power P(t) [W] over a 12-minute trip (t = 0 to 720 seconds, step size h = 60s, n = 12 intervals). "
-        "The physical goal is to compute the total thermal energy consumed by integrating the power curve: E = ∫₀⁷²⁰ P(t) dt. "
-        "Because n = 12 is both an even number and divisible by 3, all three numerical integration methods can be evaluated directly on the complete dataset."
+        "For this assignment, I evaluated the three primary numerical integration methods (Trapezoidal Rule, Simpson's 1/3 Rule, "
+        "and Simpson's 3/8 Rule) using a real electric vehicle telemetry dataset from Kaggle: \"Battery and Heating Data in Real Driving Cycles\" "
+        "(https://www.kaggle.com/datasets/atechnohazard/battery-and-heating-data-in-real-driving-cycles).\n\n"
+        "The dataset logs cabin Heating Power P(t) [W] from a BMW i3 EV during winter driving (TripB01). "
+        "We integrate over a 12-minute commute (t = 0 to 720 s, h = 60s, n = 12 intervals) to determine the total thermal energy: E = ∫ P(t) dt. "
+        "Below are the raw data, individual approximation curves, Assignment 7/8 style convergence graphs across step sizes, and the final side-by-side comparison."
     )
+
+    add_divider()
 
     # 1. Full Dataset (Scatter Plot)
     h1 = doc.add_paragraph()
-    h1.paragraph_format.space_before = Pt(8)
+    h1.paragraph_format.space_before = Pt(4)
     h1.paragraph_format.space_after = Pt(2)
     rh1 = h1.add_run("1. Full Dataset (Scatter Plot)")
     rh1.bold = True
@@ -111,7 +121,7 @@ def build_doc():
     p_scat_desc = doc.add_paragraph()
     p_scat_desc.paragraph_format.space_before = Pt(2)
     p_scat_desc.paragraph_format.space_after = Pt(4)
-    p_scat_desc.add_run("First, here is a scatter plot showing all 13 sampled telemetry points of Heating Power [W] across the trip:")
+    p_scat_desc.add_run("First, here is the scatter plot showing the 13 recorded telemetry measurements of Heating Power [W]:")
 
     scat_img = output_dir / "scatter_dataset.png"
     if scat_img.exists():
@@ -119,22 +129,24 @@ def build_doc():
         p_img.paragraph_format.space_before = Pt(4)
         p_img.paragraph_format.space_after = Pt(6)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(scat_img), width=Inches(5.4))
+        p_img.add_run().add_picture(str(scat_img), width=Inches(5.2))
 
-    # 2. Individual Graphs for the 3 Methods (Matching reference PDF progression)
+    add_divider()
+
+    # 2. Individual Method Results & Graphs (Approximation Chords + Assignment 7/8 Style Convergence)
     h2 = doc.add_paragraph()
-    h2.paragraph_format.space_before = Pt(10)
+    h2.paragraph_format.space_before = Pt(6)
     h2.paragraph_format.space_after = Pt(2)
-    rh2 = h2.add_run("2. Individual Approximations by Each Method")
+    rh2 = h2.add_run("2. Individual Results and Convergence Graphs for Each Method")
     rh2.bold = True
     rh2.font.size = Pt(12)
     rh2.font.color.rgb = RGBColor(30, 70, 140)
 
-    # (a) Trapezoidal
+    # ------------------ (a) Trapezoidal Rule ------------------
     p_t_head = doc.add_paragraph()
     p_t_head.paragraph_format.space_before = Pt(6)
     p_t_head.paragraph_format.space_after = Pt(2)
-    rt = p_t_head.add_run("Method 1: Trapezoidal Rule (Linear Chords)")
+    rt = p_t_head.add_run("Method 1: Trapezoidal Rule (Linear Approximation & Convergence)")
     rt.bold = True
     rt.font.size = Pt(11)
     rt.font.color.rgb = RGBColor(20, 40, 80)
@@ -142,24 +154,35 @@ def build_doc():
     p_t_desc = doc.add_paragraph()
     p_t_desc.paragraph_format.space_before = Pt(2)
     p_t_desc.paragraph_format.space_after = Pt(4)
+    p_t_desc.paragraph_format.line_spacing = 1.15
     p_t_desc.add_run(
-        "This graph shows the trapezoidal approximation connecting points with straight chords. "
-        "Total computed thermal energy = 939,000.00 Joules (0.26083 kWh)."
+        "• Formula: I ≈ h · [ P₀/2 + ∑ P_i + P_n/2 ]\n"
+        "• Full Result (n = 12, h = 60s): Total Energy = 939,000.00 Joules (0.26083 kWh).\n"
+        "• Graph A (Geometric Chords): Displays the piecewise linear trapezoids connecting data points.\n"
+        "• Graph B (Assignment 7 Style Convergence): Plots the calculated energy across n = 2, 4, 6, 12 approaching the reference value."
     )
 
     t_img = output_dir / "method_trapezoidal.png"
     if t_img.exists():
         p_img = doc.add_paragraph()
         p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_after = Pt(4)
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.add_run().add_picture(str(t_img), width=Inches(4.8))
+
+    t_conv_img = output_dir / "trapezoidal_convergence_graph.png"
+    if t_conv_img.exists():
+        p_img = doc.add_paragraph()
+        p_img.paragraph_format.space_before = Pt(4)
         p_img.paragraph_format.space_after = Pt(6)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(t_img), width=Inches(5.4))
+        p_img.add_run().add_picture(str(t_conv_img), width=Inches(4.8))
 
-    # (b) Simpson 1/3
+    # ------------------ (b) Simpson's 1/3 Rule ------------------
     p_s13_head = doc.add_paragraph()
     p_s13_head.paragraph_format.space_before = Pt(6)
     p_s13_head.paragraph_format.space_after = Pt(2)
-    rs13 = p_s13_head.add_run("Method 2: Simpson's 1/3 Rule (Quadratic Parabolas)")
+    rs13 = p_s13_head.add_run("Method 2: Simpson's 1/3 Rule (Parabolic Approximation & Convergence)")
     rs13.bold = True
     rs13.font.size = Pt(11)
     rs13.font.color.rgb = RGBColor(20, 40, 80)
@@ -167,24 +190,35 @@ def build_doc():
     p_s13_desc = doc.add_paragraph()
     p_s13_desc.paragraph_format.space_before = Pt(2)
     p_s13_desc.paragraph_format.space_after = Pt(4)
+    p_s13_desc.paragraph_format.line_spacing = 1.15
     p_s13_desc.add_run(
-        "This graph shows Simpson's 1/3 rule fitting parabolic arcs across triplets of points (n = 12 is even). "
-        "Total computed thermal energy = 942,400.00 Joules (0.26178 kWh)."
+        "• Formula: I ≈ (h/3) · [ P₀ + 4∑ P_odd + 2∑ P_even + P_n ]\n"
+        "• Full Result (n = 12 is even, h = 60s): Total Energy = 942,400.00 Joules (0.26178 kWh).\n"
+        "• Graph A (Geometric Parabolas): Fits smooth degree-2 parabolas across triplets of points.\n"
+        "• Graph B (Assignment 8 Style Progression): Shows rapid fourth-order convergence as even intervals increase (n = 2, 4, 6, 12)."
     )
 
     s13_img = output_dir / "method_simpson13.png"
     if s13_img.exists():
         p_img = doc.add_paragraph()
         p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_after = Pt(4)
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.add_run().add_picture(str(s13_img), width=Inches(4.8))
+
+    s13_conv_img = output_dir / "simpson13_convergence_graph.png"
+    if s13_conv_img.exists():
+        p_img = doc.add_paragraph()
+        p_img.paragraph_format.space_before = Pt(4)
         p_img.paragraph_format.space_after = Pt(6)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(s13_img), width=Inches(5.4))
+        p_img.add_run().add_picture(str(s13_conv_img), width=Inches(4.8))
 
-    # (c) Simpson 3/8
+    # ------------------ (c) Simpson's 3/8 Rule ------------------
     p_s38_head = doc.add_paragraph()
     p_s38_head.paragraph_format.space_before = Pt(6)
     p_s38_head.paragraph_format.space_after = Pt(2)
-    rs38 = p_s38_head.add_run("Method 3: Simpson's 3/8 Rule (Cubic Polynomials)")
+    rs38 = p_s38_head.add_run("Method 3: Simpson's 3/8 Rule (Cubic Approximation & Convergence)")
     rs38.bold = True
     rs38.font.size = Pt(11)
     rs38.font.color.rgb = RGBColor(20, 40, 80)
@@ -192,22 +226,35 @@ def build_doc():
     p_s38_desc = doc.add_paragraph()
     p_s38_desc.paragraph_format.space_before = Pt(2)
     p_s38_desc.paragraph_format.space_after = Pt(4)
+    p_s38_desc.paragraph_format.line_spacing = 1.15
     p_s38_desc.add_run(
-        "This graph shows Simpson's 3/8 rule fitting degree-3 cubic curves across groups of 4 points (n = 12 is divisible by 3). "
-        "Total computed thermal energy = 946,125.00 Joules (0.26281 kWh)."
+        "• Formula: I ≈ (3h/8) · [ P₀ + 3P₁ + 3P₂ + 2P₃ + ... + P_n ]\n"
+        "• Full Result (n = 12 is divisible by 3, h = 60s): Total Energy = 946,125.00 Joules (0.26281 kWh).\n"
+        "• Graph A (Geometric Cubics): Fits degree-3 cubic splines across groups of 4 points.\n"
+        "• Graph B (Assignment 8 Style Progression): Demonstrates convergence across multiples of 3 (n = 3, 6, 12)."
     )
 
     s38_img = output_dir / "method_simpson38.png"
     if s38_img.exists():
         p_img = doc.add_paragraph()
         p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_after = Pt(4)
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.add_run().add_picture(str(s38_img), width=Inches(4.8))
+
+    s38_conv_img = output_dir / "simpson38_convergence_graph.png"
+    if s38_conv_img.exists():
+        p_img = doc.add_paragraph()
+        p_img.paragraph_format.space_before = Pt(4)
         p_img.paragraph_format.space_after = Pt(6)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(s38_img), width=Inches(5.4))
+        p_img.add_run().add_picture(str(s38_conv_img), width=Inches(4.8))
+
+    add_divider()
 
     # 3. Comparison Section (Table + Combined Graph)
     h3 = doc.add_paragraph()
-    h3.paragraph_format.space_before = Pt(10)
+    h3.paragraph_format.space_before = Pt(6)
     h3.paragraph_format.space_after = Pt(2)
     rh3 = h3.add_run("3. Side-by-Side Comparison of the Three Methods")
     rh3.bold = True
@@ -219,7 +266,7 @@ def build_doc():
     p_comp_desc.paragraph_format.space_after = Pt(4)
     p_comp_desc.paragraph_format.line_spacing = 1.15
     p_comp_desc.add_run(
-        "Below is the side-by-side comparison table of all three numerical integration methods on the Kaggle BMW i3 dataset:"
+        "Below is the complete side-by-side comparison table of all three numerical methods on the Kaggle BMW i3 dataset:"
     )
 
     # Comparison Table
@@ -251,7 +298,7 @@ def build_doc():
             c = table.rows[row_idx].cells[col_idx]
             c.text = val
             set_cell_background(c, "F9FAFB" if row_idx % 2 == 1 else "FFFFFF")
-            set_cell_margins(c, 60, 60, 90, 90)
+            set_cell_margins(c, 50, 50, 90, 90)
             p = c.paragraphs[0]
             if col_idx == 0:
                 p.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -266,13 +313,13 @@ def build_doc():
     if comp_img.exists():
         p_img = doc.add_paragraph()
         p_img.paragraph_format.space_before = Pt(6)
-        p_img.paragraph_format.space_after = Pt(6)
+        p_img.paragraph_format.space_after = Pt(4)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(comp_img), width=Inches(5.4))
+        p_img.add_run().add_picture(str(comp_img), width=Inches(5.2))
 
     # Short easy conclusion matching sample style
     p_conc = doc.add_paragraph()
-    p_conc.paragraph_format.space_before = Pt(6)
+    p_conc.paragraph_format.space_before = Pt(4)
     p_conc.paragraph_format.space_after = Pt(6)
     p_conc.paragraph_format.line_spacing = 1.15
     p_conc.add_run("Short Observations & Conclusion:\n").bold = True
