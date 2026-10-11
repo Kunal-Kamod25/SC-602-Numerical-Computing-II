@@ -7,10 +7,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def load_dataset(file_path: Path) -> Tuple[List[float], List[float]]:
-    # Read telemetry dataset from CSV file.
+def load_dataset(file_path: Path) -> Tuple[List[float], List[float], List[float]]:
+    # Read Kaggle BMW i3 telemetry dataset from CSV file.
     t_vals = []
     p_vals = []
+    temp_vals = []
     with open(file_path, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         header = next(reader)  # Skip header row
@@ -18,8 +19,9 @@ def load_dataset(file_path: Path) -> Tuple[List[float], List[float]]:
             if not row or not row[0].strip():
                 continue
             t_vals.append(float(row[0].strip()))
-            p_vals.append(float(row[1].strip()))
-    return t_vals, p_vals
+            temp_vals.append(float(row[2].strip()))
+            p_vals.append(float(row[3].strip()))
+    return t_vals, p_vals, temp_vals
 
 
 def save_csv_results(file_path: Path, headers: List[str], rows: List[list]) -> None:
@@ -34,12 +36,12 @@ def plot_raw_scatter(t: List[float], P: List[float], output_path: Path) -> None:
     # Plot the raw dataset as a scatter plot.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=3, label="Full Dataset (Ground Truth)")
-    plt.title("Full Dataset (EV Power Telemetry)", fontsize=11)
-    plt.xlabel("x (Time in minutes)", fontsize=10)
-    plt.ylabel("f(x) (Power in kW)", fontsize=10)
+    plt.title("Full Dataset: Heating Power [W] vs Time [s] (BMW i3 Trip)", fontsize=11)
+    plt.xlabel("Time [s]", fontsize=10)
+    plt.ylabel("Heating Power [W]", fontsize=10)
     plt.grid(True, linestyle="--", alpha=0.5)
-    plt.ylim(-2, 48)
-    plt.legend(loc="upper left", fontsize=9)
+    plt.ylim(-100, 2100)
+    plt.legend(loc="upper right", fontsize=9)
     plt.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close()
 
@@ -48,14 +50,14 @@ def plot_individual_trapezoidal(t: List[float], P: List[float], output_path: Pat
     # Plot trapezoidal linear approximation.
     plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color="black", s=35, zorder=5, label="Full Dataset (Ground Truth)")
-    plt.plot(t, P, color="#1f77b4", linestyle="-", linewidth=2.0, label="Trapezoidal Rule (Linear segments)")
+    plt.plot(t, P, color="#1f77b4", linestyle="-", linewidth=2.0, label="Trapezoidal Rule (Linear chords)")
     plt.fill_between(t, P, color="#1f77b4", alpha=0.15)
     plt.title("Trapezoidal Rule Approximation (Linear Interpolation)", fontsize=11)
-    plt.xlabel("x (Time in minutes)", fontsize=10)
-    plt.ylabel("f(x) (Power in kW)", fontsize=10)
+    plt.xlabel("Time [s]", fontsize=10)
+    plt.ylabel("Heating Power [W]", fontsize=10)
     plt.grid(True, linestyle="--", alpha=0.5)
-    plt.ylim(-2, 48)
-    plt.legend(loc="upper left", fontsize=9)
+    plt.ylim(-100, 2100)
+    plt.legend(loc="upper right", fontsize=9)
     plt.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close()
 
@@ -70,18 +72,18 @@ def plot_individual_simpson13(t: List[float], P: List[float], output_path: Path)
         t_sub = t[i : i + 3]
         p_sub = P[i : i + 3]
         poly = np.polyfit(t_sub, p_sub, 2)
-        xs = np.linspace(t_sub[0], t_sub[-1], 40)
+        xs = np.linspace(t_sub[0], t_sub[-1], 30)
         ys = np.polyval(poly, xs)
         t_fine.extend(xs)
         p_fine.extend(ys)
     plt.plot(t_fine, p_fine, color="#2ca02c", linestyle="-", linewidth=2.0, label="Simpson's 1/3 Rule (Quadratic parabolas)")
     plt.fill_between(t_fine, p_fine, color="#2ca02c", alpha=0.15)
     plt.title("Simpson's 1/3 Rule Approximation (Parabolic Interpolation)", fontsize=11)
-    plt.xlabel("x (Time in minutes)", fontsize=10)
-    plt.ylabel("f(x) (Power in kW)", fontsize=10)
+    plt.xlabel("Time [s]", fontsize=10)
+    plt.ylabel("Heating Power [W]", fontsize=10)
     plt.grid(True, linestyle="--", alpha=0.5)
-    plt.ylim(-2, 48)
-    plt.legend(loc="upper left", fontsize=9)
+    plt.ylim(-100, 2100)
+    plt.legend(loc="upper right", fontsize=9)
     plt.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close()
 
@@ -96,18 +98,18 @@ def plot_individual_simpson38(t: List[float], P: List[float], output_path: Path)
         t_sub = t[i : i + 4]
         p_sub = P[i : i + 4]
         poly = np.polyfit(t_sub, p_sub, 3)
-        xs = np.linspace(t_sub[0], t_sub[-1], 50)
+        xs = np.linspace(t_sub[0], t_sub[-1], 40)
         ys = np.polyval(poly, xs)
         t_fine.extend(xs)
         p_fine.extend(ys)
     plt.plot(t_fine, p_fine, color="#d62728", linestyle="-", linewidth=2.0, label="Simpson's 3/8 Rule (Cubic polynomials)")
     plt.fill_between(t_fine, p_fine, color="#d62728", alpha=0.15)
     plt.title("Simpson's 3/8 Rule Approximation (Cubic Interpolation)", fontsize=11)
-    plt.xlabel("x (Time in minutes)", fontsize=10)
-    plt.ylabel("f(x) (Power in kW)", fontsize=10)
+    plt.xlabel("Time [s]", fontsize=10)
+    plt.ylabel("Heating Power [W]", fontsize=10)
     plt.grid(True, linestyle="--", alpha=0.5)
-    plt.ylim(-2, 48)
-    plt.legend(loc="upper left", fontsize=9)
+    plt.ylim(-100, 2100)
+    plt.legend(loc="upper right", fontsize=9)
     plt.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close()
 
@@ -123,7 +125,7 @@ def plot_overlay_comparison(t: List[float], P: List[float], output_path: Path) -
     p_fine_13 = []
     for i in range(0, len(t) - 1, 2):
         poly = np.polyfit(t[i : i + 3], P[i : i + 3], 2)
-        xs = np.linspace(t[i], t[i + 2], 40)
+        xs = np.linspace(t[i], t[i + 2], 30)
         t_fine_13.extend(xs)
         p_fine_13.extend(np.polyval(poly, xs))
     plt.plot(t_fine_13, p_fine_13, color="#2ca02c", linestyle="--", linewidth=2.0, label="Simpson 1/3 (Parabolic)")
@@ -133,16 +135,16 @@ def plot_overlay_comparison(t: List[float], P: List[float], output_path: Path) -
     p_fine_38 = []
     for i in range(0, len(t) - 1, 3):
         poly = np.polyfit(t[i : i + 4], P[i : i + 4], 3)
-        xs = np.linspace(t[i], t[i + 3], 50)
+        xs = np.linspace(t[i], t[i + 3], 40)
         t_fine_38.extend(xs)
         p_fine_38.extend(np.polyval(poly, xs))
     plt.plot(t_fine_38, p_fine_38, color="#d62728", linestyle=":", linewidth=2.2, label="Simpson 3/8 (Cubic)")
 
     plt.title("Comparison of Three Numerical Integration Approximations", fontsize=11)
-    plt.xlabel("x (Time in minutes)", fontsize=10)
-    plt.ylabel("f(x) (Power in kW)", fontsize=10)
+    plt.xlabel("Time [s]", fontsize=10)
+    plt.ylabel("Heating Power [W]", fontsize=10)
     plt.grid(True, linestyle="--", alpha=0.5)
-    plt.ylim(-2, 48)
-    plt.legend(loc="upper left", fontsize=8.5)
+    plt.ylim(-100, 2100)
+    plt.legend(loc="upper right", fontsize=8.5)
     plt.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close()

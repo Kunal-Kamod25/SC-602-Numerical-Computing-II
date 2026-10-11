@@ -1,9 +1,6 @@
 # Assignment 9: Main Execution Program
-# Evaluates a real-world EV battery telemetry dataset using:
-# 1. Trapezoidal Rule (linear interpolation)
-# 2. Simpson's 1/3 Rule (quadratic parabolic interpolation)
-# 3. Simpson's 3/8 Rule (cubic interpolation)
-# And generates comparison tables and graphs.
+# Real Dataset: "Battery and Heating Data in Real Driving Cycles" (Kaggle)
+# Objective: Integrate Heating Power [W] over Time [s] to compute Total Thermal Energy [Joules and kWh].
 
 from pathlib import Path
 
@@ -28,26 +25,26 @@ from functions import (
 
 def main():
     base_dir = Path(__file__).resolve().parent
-    dataset_file = base_dir / "ev_drive_cycle_power_telemetry.csv"
+    dataset_file = base_dir / "battery_heating_real_driving_cycles.csv"
     output_dir = base_dir / "output"
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print("=" * 65)
-    print("ASSIGNMENT 9: REAL-TIME DATASET NUMERICAL INTEGRATION")
-    print("=" * 65)
+    print("=" * 70)
+    print("ASSIGNMENT 9: KAGGLE BATTERY & HEATING REAL DRIVING DATASET")
+    print("=" * 70)
 
     # 1. Load the dataset
-    print(f"\n[1] Loading dataset from: {dataset_file.name}")
-    t_values, p_values = load_dataset(dataset_file)
+    print(f"\n[1] Loading Kaggle dataset: {dataset_file.name}")
+    t_values, p_values, temp_values = load_dataset(dataset_file)
     n = len(t_values) - 1
     h = t_values[1] - t_values[0]
 
     print(f"    - Points: {len(t_values)}")
-    print(f"    - Intervals (n): {n}")
-    print(f"    - Step size (h): {h:.2f} minutes")
-    print(f"    - Domain: [{t_values[0]:.1f}, {t_values[-1]:.1f}] minutes")
+    print(f"    - Intervals (n): {n} (Divisible by both 2 and 3)")
+    print(f"    - Step size (h): {h:.1f} seconds")
+    print(f"    - Time duration: [{t_values[0]:.1f}, {t_values[-1]:.1f}] seconds (0 to 12 minutes)")
 
-    # 2. Create method objects (demonstrating Polymorphism and OOP Inheritance)
+    # 2. Run OOP algorithms
     methods = [
         TrapezoidalRule(),
         SimpsonOneThird(),
@@ -58,26 +55,26 @@ def main():
 
     print("\n[2] Executing Numerical Methods:")
     for method in methods:
-        integral_val = method.integrate(t_values, p_values)
-        kwh_val = integral_val / 60.0  # Convert kW·min to kWh
+        energy_joules = method.integrate(t_values, p_values)
+        energy_kwh = energy_joules / 3.6e6  # 1 kWh = 3,600,000 Joules
         results.append([
             method.name,
             method.order,
-            f"{integral_val:.4f}",
-            f"{kwh_val:.4f}",
+            f"{energy_joules:.2f}",
+            f"{energy_kwh:.5f}",
         ])
-        print(f"    • {method.name:22s} ({method.order}): {integral_val:.4f} kW·min  ({kwh_val:.4f} kWh)")
+        print(f"    • {method.name:22s} ({method.order}): {energy_joules:12.2f} J  ({energy_kwh:.5f} kWh)")
 
     # 3. Save results table to CSV
     csv_file = output_dir / "three_methods_results.csv"
     save_csv_results(
         csv_file,
-        ["Method", "Order", "Total Energy (kW·min)", "Equivalent Energy (kWh)"],
+        ["Method", "Order", "Thermal Energy (Joules)", "Thermal Energy (kWh)"],
         results,
     )
     print(f"\n[3] Saved summary table to: {csv_file.name}")
 
-    # 4. Generate all visual graphs
+    # 4. Generate visual graphs
     print("\n[4] Generating graphs:")
     plot_raw_scatter(t_values, p_values, output_dir / "scatter_dataset.png")
     print("    - Generated: scatter_dataset.png")
