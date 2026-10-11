@@ -1,0 +1,14 @@
+# Assignment 9: Numerical Integration on Real-Time Dataset
+# Configuration and input parameters
+
+[DATASET]
+file_name = ev_drive_cycle_power_telemetry.csv
+x_column = time_minutes
+y_column = power_kw
+title = Electric Vehicle Battery Telemetry
+
+[INTEGRATION]
+a = 0.0
+b = 12.0
+step_size = 2.0
+n_intervals = 6
