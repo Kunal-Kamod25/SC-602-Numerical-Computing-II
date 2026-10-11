@@ -45,8 +45,8 @@ def generate_reference_style_graphs(output_dir: Path):
     t = np.array([0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 12.0])
     P = np.array([0.0, 18.4, 31.2, 25.0, 38.5, 42.0, 15.0])
     
-    # 1. Scatter Plot of full dataset (exact sample PDF style)
-    plt.figure(figsize=(7, 4.2))
+    # 1. Scatter Plot of full dataset
+    plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color='black', s=35, zorder=3, label='Full Dataset (Ground Truth)')
     plt.title('Full Dataset (EV Power Telemetry)', fontsize=11)
     plt.xlabel('x (Time in minutes)', fontsize=10)
@@ -57,14 +57,23 @@ def generate_reference_style_graphs(output_dir: Path):
     plt.savefig(output_dir / "scatter_dataset.png", dpi=200, bbox_inches='tight')
     plt.close()
 
-    # 2. Comparison Graph: All 3 Methods Overlaid on Dataset
-    plt.figure(figsize=(7, 4.2))
+    # 2. Individual Graph: Trapezoidal Rule
+    plt.figure(figsize=(7, 4.0))
     plt.scatter(t, P, color='black', s=35, zorder=5, label='Full Dataset (Ground Truth)')
-    
-    # Trapezoidal (linear piecewise chords)
-    plt.plot(t, P, color='#1f77b4', linestyle='-', linewidth=1.8, label='Trapezoidal Rule (Linear segments)')
-    
-    # Simpson 1/3 (Parabolic piecewise across 3-point triplets)
+    plt.plot(t, P, color='#1f77b4', linestyle='-', linewidth=2.0, label='Trapezoidal Rule (Linear segments)')
+    plt.fill_between(t, P, color='#1f77b4', alpha=0.15)
+    plt.title('Trapezoidal Rule Approximation (Linear Interpolation)', fontsize=11)
+    plt.xlabel('x (Time in minutes)', fontsize=10)
+    plt.ylabel('f(x) (Power in kW)', fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.ylim(-2, 48)
+    plt.legend(loc='upper left', fontsize=9)
+    plt.savefig(output_dir / "method_trapezoidal.png", dpi=200, bbox_inches='tight')
+    plt.close()
+
+    # 3. Individual Graph: Simpson's 1/3 Rule
+    plt.figure(figsize=(7, 4.0))
+    plt.scatter(t, P, color='black', s=35, zorder=5, label='Full Dataset (Ground Truth)')
     t_fine_13 = []
     p_fine_13 = []
     for i in range(0, len(t)-1, 2):
@@ -75,9 +84,20 @@ def generate_reference_style_graphs(output_dir: Path):
         ys = np.polyval(poly, xs)
         t_fine_13.extend(xs)
         p_fine_13.extend(ys)
-    plt.plot(t_fine_13, p_fine_13, color='#2ca02c', linestyle='--', linewidth=2.0, label="Simpson 1/3 (Quadratic parabolas)")
-    
-    # Simpson 3/8 (Cubic piecewise across 4-point blocks)
+    plt.plot(t_fine_13, p_fine_13, color='#2ca02c', linestyle='-', linewidth=2.0, label="Simpson's 1/3 Rule (Quadratic parabolas)")
+    plt.fill_between(t_fine_13, p_fine_13, color='#2ca02c', alpha=0.15)
+    plt.title("Simpson's 1/3 Rule Approximation (Parabolic Interpolation)", fontsize=11)
+    plt.xlabel('x (Time in minutes)', fontsize=10)
+    plt.ylabel('f(x) (Power in kW)', fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.ylim(-2, 48)
+    plt.legend(loc='upper left', fontsize=9)
+    plt.savefig(output_dir / "method_simpson13.png", dpi=200, bbox_inches='tight')
+    plt.close()
+
+    # 4. Individual Graph: Simpson's 3/8 Rule
+    plt.figure(figsize=(7, 4.0))
+    plt.scatter(t, P, color='black', s=35, zorder=5, label='Full Dataset (Ground Truth)')
     t_fine_38 = []
     p_fine_38 = []
     for i in range(0, len(t)-1, 3):
@@ -88,8 +108,23 @@ def generate_reference_style_graphs(output_dir: Path):
         ys = np.polyval(poly, xs)
         t_fine_38.extend(xs)
         p_fine_38.extend(ys)
-    plt.plot(t_fine_38, p_fine_38, color='#d62728', linestyle=':', linewidth=2.2, label="Simpson 3/8 (Cubic splines)")
-    
+    plt.plot(t_fine_38, p_fine_38, color='#d62728', linestyle='-', linewidth=2.0, label="Simpson's 3/8 Rule (Cubic polynomials)")
+    plt.fill_between(t_fine_38, p_fine_38, color='#d62728', alpha=0.15)
+    plt.title("Simpson's 3/8 Rule Approximation (Cubic Interpolation)", fontsize=11)
+    plt.xlabel('x (Time in minutes)', fontsize=10)
+    plt.ylabel('f(x) (Power in kW)', fontsize=10)
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.ylim(-2, 48)
+    plt.legend(loc='upper left', fontsize=9)
+    plt.savefig(output_dir / "method_simpson38.png", dpi=200, bbox_inches='tight')
+    plt.close()
+
+    # 5. Combined Overlay Comparison Graph
+    plt.figure(figsize=(7, 4.0))
+    plt.scatter(t, P, color='black', s=35, zorder=5, label='Full Dataset (Ground Truth)')
+    plt.plot(t, P, color='#1f77b4', linestyle='-', linewidth=1.8, label='Trapezoidal Rule (Linear)')
+    plt.plot(t_fine_13, p_fine_13, color='#2ca02c', linestyle='--', linewidth=2.0, label="Simpson 1/3 (Parabolic)")
+    plt.plot(t_fine_38, p_fine_38, color='#d62728', linestyle=':', linewidth=2.2, label="Simpson 3/8 (Cubic)")
     plt.title('Comparison of Three Numerical Integration Approximations', fontsize=11)
     plt.xlabel('x (Time in minutes)', fontsize=10)
     plt.ylabel('f(x) (Power in kW)', fontsize=10)
@@ -106,14 +141,12 @@ def build_doc():
 
     doc = docx.Document()
 
-    # Margins
     for section in doc.sections:
         section.top_margin = Inches(0.85)
         section.bottom_margin = Inches(0.85)
         section.left_margin = Inches(1.0)
         section.right_margin = Inches(1.0)
         
-        # Header matching sample: Numerical Computing II — Assignment-IX | Kunal Kamod (MS2513)
         header = section.header
         header_p = header.paragraphs[0]
         header_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
@@ -152,7 +185,7 @@ def build_doc():
 
     # Intro matching sample wording
     p_intro = doc.add_paragraph()
-    p_intro.paragraph_format.space_before = Pt(10)
+    p_intro.paragraph_format.space_before = Pt(8)
     p_intro.paragraph_format.space_after = Pt(6)
     p_intro.paragraph_format.line_spacing = 1.15
     p_intro.add_run(
@@ -162,9 +195,9 @@ def build_doc():
         "Datasets of this type can be downloaded from public open repositories like Kaggle (Electric Vehicle Battery & Drive Cycle Telemetry) or the NREL Fleet DNA database (https://www.nrel.gov/transportation/fleet-dna.html)."
     )
 
-    # Heading 1 matching sample: 1. Full Dataset (Scatter Plot)
+    # 1. Full Dataset (Scatter Plot)
     h1 = doc.add_paragraph()
-    h1.paragraph_format.space_before = Pt(10)
+    h1.paragraph_format.space_before = Pt(8)
     h1.paragraph_format.space_after = Pt(2)
     rh1 = h1.add_run("1. Full Dataset (Scatter Plot)")
     rh1.bold = True
@@ -180,26 +213,109 @@ def build_doc():
     if scat_img.exists():
         p_img = doc.add_paragraph()
         p_img.paragraph_format.space_before = Pt(4)
-        p_img.paragraph_format.space_after = Pt(8)
+        p_img.paragraph_format.space_after = Pt(6)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(scat_img), width=Inches(5.6))
+        p_img.add_run().add_picture(str(scat_img), width=Inches(5.4))
 
-    # Heading 2: 2. Three-Method Comparison & Progression
+    # 2. Individual Graphs for the 3 Methods (Matching reference PDF progression)
     h2 = doc.add_paragraph()
-    h2.paragraph_format.space_before = Pt(8)
+    h2.paragraph_format.space_before = Pt(10)
     h2.paragraph_format.space_after = Pt(2)
-    rh2 = h2.add_run("2. Comparison of the Three Integration Methods")
+    rh2 = h2.add_run("2. Individual Approximations by Each Method")
     rh2.bold = True
     rh2.font.size = Pt(12)
     rh2.font.color.rgb = RGBColor(30, 70, 140)
+
+    # (a) Trapezoidal
+    p_t_head = doc.add_paragraph()
+    p_t_head.paragraph_format.space_before = Pt(6)
+    p_t_head.paragraph_format.space_after = Pt(2)
+    rt = p_t_head.add_run("Method 1: Trapezoidal Rule (Linear Segments)")
+    rt.bold = True
+    rt.font.size = Pt(11)
+    rt.font.color.rgb = RGBColor(20, 40, 80)
+
+    p_t_desc = doc.add_paragraph()
+    p_t_desc.paragraph_format.space_before = Pt(2)
+    p_t_desc.paragraph_format.space_after = Pt(4)
+    p_t_desc.add_run(
+        "This graph shows the trapezoidal approximation connecting consecutive data points with straight chords. "
+        "Total computed energy = 325.20 kW·min (5.42 kWh)."
+    )
+
+    t_img = output_dir / "method_trapezoidal.png"
+    if t_img.exists():
+        p_img = doc.add_paragraph()
+        p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_after = Pt(6)
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.add_run().add_picture(str(t_img), width=Inches(5.4))
+
+    # (b) Simpson 1/3
+    p_s13_head = doc.add_paragraph()
+    p_s13_head.paragraph_format.space_before = Pt(6)
+    p_s13_head.paragraph_format.space_after = Pt(2)
+    rs13 = p_s13_head.add_run("Method 2: Simpson's 1/3 Rule (Quadratic Parabolas)")
+    rs13.bold = True
+    rs13.font.size = Pt(11)
+    rs13.font.color.rgb = RGBColor(20, 40, 80)
+
+    p_s13_desc = doc.add_paragraph()
+    p_s13_desc.paragraph_format.space_before = Pt(2)
+    p_s13_desc.paragraph_format.space_after = Pt(4)
+    p_s13_desc.add_run(
+        "This graph shows Simpson's 1/3 rule fitting smooth degree-2 parabolas across triplets of points. "
+        "Total computed energy = 330.67 kW·min (5.51 kWh)."
+    )
+
+    s13_img = output_dir / "method_simpson13.png"
+    if s13_img.exists():
+        p_img = doc.add_paragraph()
+        p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_after = Pt(6)
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.add_run().add_picture(str(s13_img), width=Inches(5.4))
+
+    # (c) Simpson 3/8
+    p_s38_head = doc.add_paragraph()
+    p_s38_head.paragraph_format.space_before = Pt(6)
+    p_s38_head.paragraph_format.space_after = Pt(2)
+    rs38 = p_s38_head.add_run("Method 3: Simpson's 3/8 Rule (Cubic Polynomials)")
+    rs38.bold = True
+    rs38.font.size = Pt(11)
+    rs38.font.color.rgb = RGBColor(20, 40, 80)
+
+    p_s38_desc = doc.add_paragraph()
+    p_s38_desc.paragraph_format.space_before = Pt(2)
+    p_s38_desc.paragraph_format.space_after = Pt(4)
+    p_s38_desc.add_run(
+        "This graph shows Simpson's 3/8 rule fitting degree-3 cubic curves across sets of 4 points. "
+        "Total computed energy = 341.48 kW·min (5.69 kWh)."
+    )
+
+    s38_img = output_dir / "method_simpson38.png"
+    if s38_img.exists():
+        p_img = doc.add_paragraph()
+        p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_after = Pt(6)
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.add_run().add_picture(str(s38_img), width=Inches(5.4))
+
+    # 3. Comparison Section (Table + Combined Graph)
+    h3 = doc.add_paragraph()
+    h3.paragraph_format.space_before = Pt(10)
+    h3.paragraph_format.space_after = Pt(2)
+    rh3 = h3.add_run("3. Side-by-Side Comparison of the Three Methods")
+    rh3.bold = True
+    rh3.font.size = Pt(12)
+    rh3.font.color.rgb = RGBColor(30, 70, 140)
 
     p_comp_desc = doc.add_paragraph()
     p_comp_desc.paragraph_format.space_before = Pt(2)
     p_comp_desc.paragraph_format.space_after = Pt(4)
     p_comp_desc.paragraph_format.line_spacing = 1.15
     p_comp_desc.add_run(
-        "Below, we apply all three methods across the 6 intervals (step size h = 2.0 min) to compute total electrical energy E = ∫₀¹² P(t) dt. "
-        "Here is the comparison table of results:"
+        "Below is the comparison table and overlaid comparison graph evaluating all three methods across the same dataset:"
     )
 
     # Comparison Table
@@ -241,27 +357,14 @@ def build_doc():
             for r in p.runs:
                 r.font.size = Pt(8.5)
 
-    # Heading 3: Comparison Graph Overlay
-    h3 = doc.add_paragraph()
-    h3.paragraph_format.space_before = Pt(10)
-    h3.paragraph_format.space_after = Pt(2)
-    rh3 = h3.add_run("3. Comparison Graph (Approximation Overlays)")
-    rh3.bold = True
-    rh3.font.size = Pt(12)
-    rh3.font.color.rgb = RGBColor(30, 70, 140)
-
-    p_g_desc = doc.add_paragraph()
-    p_g_desc.paragraph_format.space_before = Pt(2)
-    p_g_desc.paragraph_format.space_after = Pt(4)
-    p_g_desc.add_run("This graph overlays all three curves on top of the original dataset to show how each method geometrically treats the points:")
-
+    # Combined Overlay Comparison Graph
     comp_img = output_dir / "three_methods_comparison_overlay.png"
     if comp_img.exists():
         p_img = doc.add_paragraph()
-        p_img.paragraph_format.space_before = Pt(4)
+        p_img.paragraph_format.space_before = Pt(6)
         p_img.paragraph_format.space_after = Pt(6)
         p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_img.add_run().add_picture(str(comp_img), width=Inches(5.6))
+        p_img.add_run().add_picture(str(comp_img), width=Inches(5.4))
 
     # Short easy conclusion matching sample style
     p_conc = doc.add_paragraph()
