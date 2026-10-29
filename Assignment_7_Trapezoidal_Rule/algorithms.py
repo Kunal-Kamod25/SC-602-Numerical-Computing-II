@@ -59,7 +59,7 @@ def estimate_order(error_old: float, error_new: float) -> float:
     if error_new == 0:
         return float("inf")
 
-    # Estimate p using E(h) / E(h/2) = 2^p.
+    # Estimate p using E(h) / E(h/2) = 2^p.k
     return math.log(error_old / error_new, 2)
 
 
